@@ -2,13 +2,22 @@ package auth
 
 import (
 	"fmt"
+	"link-shorter/configs"
 	"net/http"
 )
 
-type AuthHandler struct {}
+type AuthHandlerDeps struct {
+	*configs.Config
+}
 
-func NewAuthHandler(router *http.ServeMux) {
-	handler := &AuthHandler{}
+type AuthHandler struct {
+	*configs.Config
+}
+
+func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
+	handler := &AuthHandler{
+		Config: deps.Config,
+	}
 	router.HandleFunc("POST /register", handler.Register())
 	router.HandleFunc("POST /login", handler.Login())
 }

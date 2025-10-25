@@ -1,7 +1,7 @@
 package main
 
 import (
-	// "link-shorter/configs"
+	"link-shorter/configs"
 	"fmt"
 	"link-shorter/internal/auth"
 	"net/http"
@@ -9,11 +9,12 @@ import (
 
 
 func main() {
-	// conf := configs.LoadConfig()
-
+	conf := configs.LoadConfig()
 	router := http.NewServeMux()
 
-	auth.NewAuthHandler(router)
+	auth.NewAuthHandler(router, auth.AuthHandlerDeps{
+		Config: conf,
+	})
 
 	server := http.Server{
 		Addr: ":8081",
