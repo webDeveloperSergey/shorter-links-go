@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"link-shorter/configs"
+	"link-shorter/pkg/res"
 	"net/http"
 )
 
@@ -18,13 +19,17 @@ func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
 	handler := &AuthHandler{
 		Config: deps.Config,
 	}
-	router.HandleFunc("POST /register", handler.Register())
-	router.HandleFunc("POST /login", handler.Login())
+	router.HandleFunc("POST /auth/register", handler.Register())
+	router.HandleFunc("POST /auth/login", handler.Login())
 }
 
 func (handler *AuthHandler) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		fmt.Println("Register")
+		data := LoginResponse{
+			Token: "test123",
+		}
+
+		res.Json(w, data, 201)
 	}
 }
 
