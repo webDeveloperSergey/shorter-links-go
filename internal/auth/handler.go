@@ -25,8 +25,19 @@ func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
 }
 
 func (handler *AuthHandler) Register() http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		fmt.Println("Register")
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, err := req.HandleBody[RegisterRequest](w, r)
+		if err != nil {
+			return
+		}
+
+		fmt.Println(body)
+
+		data := RegisterResponse{
+			Token: "test123",
+		}
+
+		res.Json(w, data, 201)
 	}
 }
 
