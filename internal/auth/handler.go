@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"link-shorter/configs"
+	"link-shorter/pkg/req"
 	"link-shorter/pkg/res"
 	"net/http"
 )
@@ -25,6 +26,19 @@ func NewAuthHandler(router *http.ServeMux, deps AuthHandlerDeps) {
 
 func (handler *AuthHandler) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
+		fmt.Println("Register")
+	}
+}
+
+func (handler *AuthHandler) Login() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		body, err := req.HandleBody[LoginRequest](w, r)
+		if err != nil {
+			return
+		}
+
+		fmt.Println(body)
+
 		data := LoginResponse{
 			Token: "test123",
 		}
@@ -33,8 +47,3 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 	}
 }
 
-func (handler *AuthHandler) Login() http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
-		fmt.Println("Login")
-	}
-}
