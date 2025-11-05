@@ -1,20 +1,21 @@
 package link
 
 import (
-	"link-shorter/configs"
 	"net/http"
 )
 
 type LinkHandlerDeps struct {
-
+	LinkRepository *LinkRepository
 }
 
 type LinkHandler struct {
-	*configs.Config
+	LinkRepository *LinkRepository
 }
 
 func NewLinkHandler(router *http.ServeMux, deps LinkHandlerDeps) {
-	handler := &LinkHandler{}
+	handler := &LinkHandler{
+		LinkRepository: deps.LinkRepository,
+	}
 
 	router.HandleFunc("GET {hash}", handler.GoTo())
 	router.HandleFunc("POST /link/", handler.Create())
