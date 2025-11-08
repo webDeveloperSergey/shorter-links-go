@@ -1,6 +1,9 @@
 package link
 
 import (
+	"fmt"
+	"link-shorter/pkg/req"
+	"link-shorter/pkg/res"
 	"net/http"
 )
 
@@ -17,21 +20,42 @@ func NewLinkHandler(router *http.ServeMux, deps LinkHandlerDeps) {
 		LinkRepository: deps.LinkRepository,
 	}
 
-	router.HandleFunc("GET {hash}", handler.GoTo())
-	router.HandleFunc("POST /link/", handler.Create())
+	router.HandleFunc("GET /{hash}", handler.GoTo())
+	router.HandleFunc("POST /link", handler.Create())
 	router.HandleFunc("PATCH /link/{id}", handler.Update())
 	router.HandleFunc("DELETE /link/{id}", handler.Delete())
 }
 
 func (handler *LinkHandler) GoTo() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		hash := r.PathValue("hash")
 
+		fmt.Print(hash)
+
+		link, err := handler.LinkRepository.Find(hash)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+
+		http.Redirect(w, r, link.Url, http.StatusTemporaryRedirect)
 	}
 }
 
 func (handler *LinkHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		
+		body, err := req.HandleBody[LinkCreateRequest](w, r)
+		if err != nil {
+			return 
+		}
+
+		link := NewLink(body.Url)
+		createdLink, err := handler.LinkRepository.Create(link)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		res.Json(w, createdLink, 201)
 	}
 }
 
